@@ -13,7 +13,7 @@ public:
 
     bool startCliente();
 
-    void enviarNickname(const QString &nickname);
+    bool enviarMensagem(const QString &qstrMsg);
 
 
 private:
@@ -35,7 +35,7 @@ public slots:
     void readyRead();
 
 private:
-    const QString KEY_NICKNAME = "$nicknamePass$";
+
     QTcpSocket *mSocket;
     qintptr mDescriptor;
 };

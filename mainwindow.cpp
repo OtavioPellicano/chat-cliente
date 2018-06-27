@@ -32,12 +32,109 @@ void MainWindow::setNickname(const QString &nickname)
     mNickname = nickname;
 }
 
+QString MainWindow::origem() const
+{
+    return mOrigem;
+}
+
+void MainWindow::setOrigem(const QByteArray &msg)
+{
+    string str = QString(msg).toStdString();
+
+    string::iterator itFirstQuadrado = std::find(str.begin(), str.end(), '#');
+    string::iterator itSecondQuadrado = std::find(itFirstQuadrado + 1, str.end(), '#');
+
+    mOrigem = QString::fromStdString(string(itFirstQuadrado + 1, itSecondQuadrado));
+
+}
+
+QString MainWindow::destino() const
+{
+    return mDestino;
+}
+
+void MainWindow::setDestino(const QByteArray &msg)
+{
+    string str = QString(msg).toStdString();
+
+    string::iterator itSecondQuadrado = std::find(str.begin() + 1, str.end(), '#');
+    string::iterator itThirdQuadrado = std::find(itSecondQuadrado + 1, str.end(), '#');
+
+    mDestino = QString::fromStdString(string(itSecondQuadrado + 1, itThirdQuadrado));
+}
+
+QString MainWindow::mensagem() const
+{
+    return mMensagem;
+}
+
+void MainWindow::setMensagem(const QByteArray &msg)
+{
+    string str = QString(msg).toStdString();
+
+    str = string(str.begin(),std::remove(str.begin(), str.end(), '\r'));
+    str = string(str.begin(),std::remove(str.begin(), str.end(), '\n'));
+
+    string::iterator itFirst = std::find(str.begin(), str.end(), ':');
+
+    mMensagem = QString::fromStdString(string(itFirst + 1, str.end()));
+}
+
+/**
+ * @brief Servidor::validarEstruturaMensagem
+ * @param msg
+ * @return
+ * valida a estrutura do protocolo de mensagem, conforme a seguir:
+ * #origem#destino#:mensagem
+ * o destino pode está vazio, representando assim o input de um nickname
+ * se a mensagem vier ###:
+ * o cliente foi desconectado do servidor
+ */
+bool MainWindow::validarEstruturaMensagem(const QByteArray &msg)
+{
+    //     #origem#destino#:mensagem
+
+    string str = QString(msg).toStdString();
+
+    if(!(std::count(str.begin(), str.end(),'#') >= 3 && std::count(str.begin(), str.end(), ':') >= 1))
+    {
+        return false;
+    }
+
+    string::iterator itFirstQuadrado = std::find(str.begin(), str.end(), '#');
+    string::iterator itSecondQuadrado = std::find(itFirstQuadrado + 1, str.end(), '#');
+    string::iterator itThirdQuadrado = std::find(itSecondQuadrado + 1, str.end(), '#');
+    string::iterator itPonto = std::find(str.begin(), str.end(), ':');
+
+    if(itFirstQuadrado == str.begin())
+        if(itThirdQuadrado + 1 == itPonto)                      //o ultimo # deve seguir de :
+            return true;
+
+    return false;
+}
+
+QString MainWindow::encapsularMsg(const QString &qstrOrigem, const QString &qstrDestino, const QString &qstrMsg)
+{
+    return QString("#%1#%2#:%3").arg(qstrOrigem).arg(qstrDestino).arg(qstrMsg);
+}
+
 void MainWindow::readyRead(const QByteArray &msg)
 {
-    QString qstr = msg;
+
+
+    qDebug() << "mainWindowReadReady: " << msg;
+
+    if(!validarEstruturaMensagem(msg))
+    {
+        qDebug() << "mensagem fora da estrutura";
+
+        return;
+    }
+
+    QString qstr = QString(msg);
     QMessageBox::information(this, "teste", QString(msg));
 
-    ui->actionSair_da_sala->setEnabled(false);
+    ui->actionSair_da_sala->setEnabled(true);
     ui->comboBox_conversa_atual->setEnabled(false);
     ui->listView_chat->setEnabled(false);
     ui->listView_usuarios->setEnabled(false);
@@ -81,8 +178,15 @@ void MainWindow::on_actionConectar_a_sala_triggered()
             return;
         }
 
+
+
         setNickname(strTemp);
-        cliente()->enviarNickname(nickname());
+        if(!cliente()->enviarMensagem(encapsularMsg(nickname())))
+        {
+            qDebug() << "impossivel enviar a mensagem";
+            return;
+        }
+
 
         ui->actionConectar_a_sala->setEnabled(false);
         ui->actionSair_da_sala->setEnabled(true);

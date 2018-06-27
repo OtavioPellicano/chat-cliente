@@ -6,6 +6,19 @@
 #include <QMessageBox>
 #include "cliente.h"
 #include <QStringList>
+#include <string>
+#include <map>
+
+/**
+ * codigo de retorno
+ * $c$  //conectado
+ * $d$  //fui desconectado
+ *
+ * formato mensagem
+ * #origem#destino#:
+ *
+ */
+using std::string;
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +38,20 @@ public:
 
     QString nickname() const;
     void setNickname(const QString &nickname);
+
+    QString origem() const;
+    void setOrigem(const QByteArray &msg);
+
+    QString destino() const;
+    void setDestino(const QByteArray &msg);
+
+    QString mensagem() const;
+    void setMensagem(const QByteArray &msg);
+
+    bool validarEstruturaMensagem(const QByteArray &msg);
+
+    QString encapsularMsg(const QString &qstrOrigem, const QString &qstrDestino = "", const QString &qstrMsg = "");
+
 
 public slots:
     void readyRead(const QByteArray &msg);
@@ -46,7 +73,11 @@ private:
     Cliente *mCliente;
     QString mNickname;
 
-    QStringList mNicknameOnline;
+    QString mOrigem;
+    QString mDestino;
+    QString mMensagem;
+
+    std::map<QString, QStringList> mMapNickLog;
 
 };
 

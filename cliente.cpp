@@ -27,14 +27,14 @@ bool Cliente::startCliente()
     return true;
 }
 
-void Cliente::enviarNickname(const QString &nickname)
+bool Cliente::enviarMensagem(const QString &qstrMsg)
 {
-    QByteArray data;
-    data.append("#");
-    data.append(KEY_NICKNAME);
-    data.append("#:");
-    data.append(nickname);
-    socket()->write(data);
+    QByteArray byteArrayTemp = qstrMsg.toLocal8Bit();
+    byteArrayTemp.append("\r\n");
+    socket()->write(byteArrayTemp);
+    if(!socket()->waitForBytesWritten())
+        return false;
+    return true;
 }
 
 QTcpSocket *Cliente::socket() const
@@ -75,10 +75,10 @@ void Cliente::bytesWritten(qint64 bytes)
 
 void Cliente::readyRead()
 {
-    qDebug() << descriptor() << ":" << socket()->readAll();
     QByteArray bTemp = socket()->readAll();
+    qDebug() << descriptor() << "read:" << bTemp;
 
-    emit readyRead(socket()->readAll());
+    emit readyRead(bTemp);
 }
 
 
