@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include "cliente.h"
 #include <QStringList>
+#include <QStringBuilder>
 #include <string>
 #include <map>
 
@@ -32,7 +33,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-
+private:
     Cliente *cliente() const;
     void setCliente(Cliente *cliente);
 
@@ -52,6 +53,8 @@ public:
 
     QString encapsularMsg(const QString &qstrOrigem, const QString &qstrDestino = "", const QString &qstrMsg = "");
 
+    void setUiConectado(const bool &value);
+
 
 public slots:
     void readyRead(const QByteArray &msg);
@@ -69,6 +72,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    const QString BROADCAST_KEY = "$$$$";   //broadcast: #$$$$##:user1;user2;user3
 
     Cliente *mCliente;
     QString mNickname;

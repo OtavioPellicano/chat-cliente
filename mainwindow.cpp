@@ -7,12 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->actionSair_da_sala->setEnabled(false);
-    ui->comboBox_conversa_atual->setEnabled(false);
-    ui->listView_chat->setEnabled(false);
-    ui->listView_usuarios->setEnabled(false);
-    ui->pushButton_enviar->setEnabled(false);
-    ui->textEdit_mensagem->setEnabled(false);
+    setUiConectado(false);
+    ui->lineEdit_nickname->setEnabled(false);
 
 }
 
@@ -118,28 +114,77 @@ QString MainWindow::encapsularMsg(const QString &qstrOrigem, const QString &qstr
     return QString("#%1#%2#:%3").arg(qstrOrigem).arg(qstrDestino).arg(qstrMsg);
 }
 
+void MainWindow::setUiConectado(const bool &value)
+{
+    if(value)
+    {
+        ui->actionConectar_a_sala->setEnabled(false);
+        ui->actionSair_da_sala->setEnabled(true);
+        ui->comboBox_conversa_atual->setEnabled(true);
+        ui->listView_chat->setEnabled(true);
+        ui->listView_usuarios->setEnabled(true);
+        ui->pushButton_enviar->setEnabled(true);
+        ui->textEdit_mensagem->setEnabled(true);
+
+        ui->statusBar->showMessage(QString("conectado como %1").arg(nickname()), 3000);
+    }
+    else
+    {
+        ui->actionConectar_a_sala->setEnabled(true);
+        ui->actionSair_da_sala->setEnabled(false);
+        ui->comboBox_conversa_atual->setEnabled(false);
+        ui->listView_chat->setEnabled(false);
+        ui->listView_usuarios->setEnabled(false);
+        ui->pushButton_enviar->setEnabled(false);
+        ui->textEdit_mensagem->setEnabled(false);
+
+        ui->lineEdit_nickname->clear();
+
+        ui->statusBar->showMessage(tr("desconectado"), 3000);
+
+    }
+}
+
 void MainWindow::readyRead(const QByteArray &msg)
 {
-
 
     qDebug() << "mainWindowReadReady: " << msg;
 
     if(!validarEstruturaMensagem(msg))
     {
         qDebug() << "mensagem fora da estrutura";
-
         return;
     }
 
-    QString qstr = QString(msg);
-    QMessageBox::information(this, "teste", QString(msg));
+    setOrigem(msg);
+    setDestino(msg);
+    setMensagem(msg);
 
-    ui->actionSair_da_sala->setEnabled(true);
-    ui->comboBox_conversa_atual->setEnabled(false);
-    ui->listView_chat->setEnabled(false);
-    ui->listView_usuarios->setEnabled(false);
-    ui->pushButton_enviar->setEnabled(false);
-    ui->textEdit_mensagem->setEnabled(false);
+    //Validando nickname existente
+    if(destino().isEmpty() && origem().isEmpty())
+    {
+        QMessageBox::critical(this, tr("Chat"), tr("Nickname em uso!"), QMessageBox::Ok);
+        return;
+    }
+
+
+    //recebendo nickname
+    if(destino().isEmpty() && !origem().isEmpty())
+    {
+        setNickname(origem());
+        ui->lineEdit_nickname->setText(nickname());
+        setUiConectado(true);
+        return;
+    }
+
+    //Broadcast: #$$$$##:user1;user2;user3
+    if(origem() == BROADCAST_KEY && destino().isEmpty() && !mensagem().isEmpty())
+    {
+        //tratar broadcast
+        return;
+    }
+
+
 
 }
 
@@ -178,23 +223,12 @@ void MainWindow::on_actionConectar_a_sala_triggered()
             return;
         }
 
-
-
         setNickname(strTemp);
         if(!cliente()->enviarMensagem(encapsularMsg(nickname())))
         {
             qDebug() << "impossivel enviar a mensagem";
             return;
         }
-
-
-        ui->actionConectar_a_sala->setEnabled(false);
-        ui->actionSair_da_sala->setEnabled(true);
-        ui->comboBox_conversa_atual->setEnabled(true);
-        ui->listView_chat->setEnabled(true);
-        ui->listView_usuarios->setEnabled(true);
-        ui->pushButton_enviar->setEnabled(true);
-        ui->textEdit_mensagem->setEnabled(true);
 
     }
     else
@@ -208,8 +242,7 @@ void MainWindow::on_actionConectar_a_sala_triggered()
 
 void MainWindow::on_actionSair_da_sala_triggered()
 {
-    ui->actionConectar_a_sala->setEnabled(true);
-    ui->actionSair_da_sala->setEnabled(false);
+    setUiConectado(false);
 
     delete cliente();
 
