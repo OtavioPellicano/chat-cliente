@@ -9,6 +9,8 @@
 #include <QStringBuilder>
 #include <string>
 #include <map>
+#include <QListWidget>
+
 
 /**
  * codigo de retorno
@@ -33,6 +35,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
 private:
     Cliente *cliente() const;
     void setCliente(Cliente *cliente);
@@ -49,6 +52,7 @@ private:
     QString mensagem() const;
     void setMensagem(const QByteArray &msg);
 
+
     bool validarEstruturaMensagem(const QByteArray &msg);
 
     QString encapsularMsg(const QString &qstrOrigem, const QString &qstrDestino = "", const QString &qstrMsg = "");
@@ -57,6 +61,16 @@ private:
 
     QStringList listaNicknameOnline() const;
     void setListaNicknameOnline(const QStringList &listaNicknameOnline);
+
+
+    QString homeOrigem() const;
+    void setHomeOrigem(const QString &homeOrigem);
+
+    QString homeDestino() const;
+    void setHomeDestino(const QString &homeDestino);
+
+    QString homeMensagem() const;
+    void setHomeMensagem(const QString &homeMensagem);
 
 
 
@@ -74,6 +88,8 @@ private slots:
 
     void on_pushButton_enviar_clicked();
 
+    void on_listWidget_usuarios_itemDoubleClicked(QListWidgetItem *item);
+
 private:
     Ui::MainWindow *ui;
 
@@ -90,6 +106,11 @@ private:
 
     std::map<QString, QStringList> mMapNickLog;
     QStringList mListaNicknameOnline;
+    QStringList mListaConversa;
+
+    QString mHomeOrigem;
+    QString mHomeDestino;
+    QString mHomeMensagem;
 
 };
 

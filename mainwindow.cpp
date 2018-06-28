@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     setUiConectado(false);
-    ui->lineEdit_nickname->setEnabled(false);
 
 }
 
@@ -116,15 +115,19 @@ QString MainWindow::encapsularMsg(const QString &qstrOrigem, const QString &qstr
 
 void MainWindow::setUiConectado(const bool &value)
 {
+    ui->lineEdit_origem->setReadOnly(true);
+    ui->lineEdit_destino->setReadOnly(true);
+
     if(value)
     {
         ui->actionConectar_a_sala->setEnabled(false);
         ui->actionSair_da_sala->setEnabled(true);
-        ui->comboBox_conversa_atual->setEnabled(true);
+        ui->lineEdit_destino->setEnabled(true);
         ui->listWidget_chat->setEnabled(true);
         ui->listWidget_usuarios->setEnabled(true);
         ui->pushButton_enviar->setEnabled(true);
-        ui->textEdit_mensagem->setEnabled(true);
+        ui->lineEdit_mensagem->setEnabled(true);
+        ui->lineEdit_origem->setEnabled(true);
 
         ui->statusBar->showMessage(QString("conectado como %1").arg(nickname()), 3000);
     }
@@ -132,13 +135,18 @@ void MainWindow::setUiConectado(const bool &value)
     {
         ui->actionConectar_a_sala->setEnabled(true);
         ui->actionSair_da_sala->setEnabled(false);
-        ui->comboBox_conversa_atual->setEnabled(false);
+        ui->lineEdit_destino->setEnabled(false);
         ui->listWidget_chat->setEnabled(false);
         ui->listWidget_usuarios->setEnabled(false);
         ui->pushButton_enviar->setEnabled(false);
-        ui->textEdit_mensagem->setEnabled(false);
+        ui->lineEdit_mensagem->setEnabled(false);
+        ui->lineEdit_origem->setEnabled(false);
 
-        ui->lineEdit_nickname->clear();
+        ui->lineEdit_origem->clear();
+        ui->lineEdit_destino->clear();
+        ui->lineEdit_mensagem->clear();
+        ui->listWidget_chat->clear();
+        ui->listWidget_usuarios->clear();
 
         ui->statusBar->showMessage(tr("desconectado"), 3000);
 
@@ -172,7 +180,7 @@ void MainWindow::readyRead(const QByteArray &msg)
     if(destino().isEmpty() && !origem().isEmpty())
     {
         setNickname(origem());
-        ui->lineEdit_nickname->setText(nickname());
+        ui->lineEdit_origem->setText(nickname());
         setUiConectado(true);
         return;
     }
@@ -204,13 +212,30 @@ void MainWindow::readyRead(const QByteArray &msg)
             qDebug() << "usuario online:" << usuarioOnline;
 
             if(usuarioOnline != nickname())
+            {
                 QMessageBox::information(this, tr("Chat"), QString("Novo usuário online:\n%1").arg(usuarioOnline), QMessageBox::Ok);
+            }
+
 
         }
         else
         {
             setListaNicknameOnline(mensagem().split(";"));
             ui->listWidget_usuarios->clear();
+
+            ui->statusBar->showMessage(QString("%1 desconectado").arg(mListaNicknameOnline.back()), 3000);
+
+            mListaNicknameOnline.pop_back();
+
+            for(auto itqstr = mListaNicknameOnline.begin(); itqstr != mListaNicknameOnline.end(); ++itqstr)
+            {
+                if(*itqstr == nickname())
+                {
+                    mListaNicknameOnline.erase(itqstr);
+                    break;
+                }
+            }
+
             ui->listWidget_usuarios->addItems(listaNicknameOnline());
 
         }
@@ -286,7 +311,18 @@ void MainWindow::on_actionSair_da_sala_triggered()
 
 void MainWindow::on_pushButton_enviar_clicked()
 {
+    setHomeMensagem(ui->lineEdit_mensagem->text());
+    ui->lineEdit_mensagem->clear();
+    if(homeMensagem().isEmpty() || homeDestino().isEmpty())
+        return;
 
+
+    mListaConversa.append(QString("%1: %2").arg(homeOrigem()).arg(homeMensagem()));
+    ui->listWidget_chat->clear();
+    ui->listWidget_chat->addItems(mListaConversa);
+    ui->listWidget_chat->scrollToBottom();
+
+    cliente()->enviarMensagem(encapsularMsg(homeOrigem(), homeDestino(), homeMensagem()));
 }
 
 QStringList MainWindow::listaNicknameOnline() const
@@ -300,3 +336,45 @@ void MainWindow::setListaNicknameOnline(const QStringList &listaNicknameOnline)
 }
 
 
+
+void MainWindow::on_listWidget_usuarios_itemDoubleClicked(QListWidgetItem *item)
+{
+
+    ui->lineEdit_destino->setText(item->text());
+    setHomeOrigem(ui->lineEdit_origem->text());
+    setHomeDestino(ui->lineEdit_destino->text());
+
+    ui->statusBar->showMessage(QString("conversando com %1").arg(item->text()));
+
+
+}
+
+QString MainWindow::homeMensagem() const
+{
+    return mHomeMensagem;
+}
+
+void MainWindow::setHomeMensagem(const QString &homeMensagem)
+{
+    mHomeMensagem = homeMensagem;
+}
+
+QString MainWindow::homeDestino() const
+{
+    return mHomeDestino;
+}
+
+void MainWindow::setHomeDestino(const QString &homeDestino)
+{
+    mHomeDestino = homeDestino;
+}
+
+QString MainWindow::homeOrigem() const
+{
+    return mHomeOrigem;
+}
+
+void MainWindow::setHomeOrigem(const QString &homeOrigem)
+{
+    mHomeOrigem = homeOrigem;
+}
