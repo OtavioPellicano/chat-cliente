@@ -186,28 +186,32 @@ void MainWindow::readyRead(const QByteArray &msg)
         if(destino() == BROADCAST_CONECTADO)
         {
             setListaNicknameOnline(mensagem().split(";"));
+            QString usuarioOnline = listaNicknameOnline().back();
 
-            for(auto itqstr = listaNicknameOnline.begin(); itqstr != listaNicknameOnline.end(); ++itqstr)
+            for(auto itqstr = mListaNicknameOnline.begin(); itqstr != mListaNicknameOnline.end(); ++itqstr)
             {
                 if(*itqstr == nickname())
                 {
-                    listaNicknameOnline.erase(itqstr);
+                    mListaNicknameOnline.erase(itqstr);
                     break;
                 }
             }
 
             ui->listWidget_usuarios->clear();
-            ui->listWidget_usuarios->addItems(listaNicknameOnline);
+            ui->listWidget_usuarios->addItems(listaNicknameOnline());
 
-            QString usuarioOnline = listaNicknameOnline[listaNicknameOnline.size() - 1];
+            qDebug() << "nickname: " << nickname();
+            qDebug() << "usuario online:" << usuarioOnline;
+
             if(usuarioOnline != nickname())
                 QMessageBox::information(this, tr("Chat"), QString("Novo usuário online:\n%1").arg(usuarioOnline), QMessageBox::Ok);
-
-
 
         }
         else
         {
+            setListaNicknameOnline(mensagem().split(";"));
+            ui->listWidget_usuarios->clear();
+            ui->listWidget_usuarios->addItems(listaNicknameOnline());
 
         }
 
@@ -285,12 +289,14 @@ void MainWindow::on_pushButton_enviar_clicked()
 
 }
 
-QStringList MainWindow::getListaNicknameOnline() const
+QStringList MainWindow::listaNicknameOnline() const
 {
-    return listaNicknameOnline;
+    return mListaNicknameOnline;
 }
 
-void MainWindow::setListaNicknameOnline(const QStringList &value)
+void MainWindow::setListaNicknameOnline(const QStringList &listaNicknameOnline)
 {
-    listaNicknameOnline = value;
+    mListaNicknameOnline = listaNicknameOnline;
 }
+
+

@@ -55,8 +55,10 @@ private:
 
     void setUiConectado(const bool &value);
 
-    QStringList getListaNicknameOnline() const;
-    void setListaNicknameOnline(const QStringList &value);
+    QStringList listaNicknameOnline() const;
+    void setListaNicknameOnline(const QStringList &listaNicknameOnline);
+
+
 
 public slots:
     void readyRead(const QByteArray &msg);
@@ -87,7 +89,7 @@ private:
     QString mMensagem;
 
     std::map<QString, QStringList> mMapNickLog;
-    QStringList listaNicknameOnline;
+    QStringList mListaNicknameOnline;
 
 };
 
