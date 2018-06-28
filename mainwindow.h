@@ -55,6 +55,8 @@ private:
 
     void setUiConectado(const bool &value);
 
+    QStringList getListaNicknameOnline() const;
+    void setListaNicknameOnline(const QStringList &value);
 
 public slots:
     void readyRead(const QByteArray &msg);
@@ -73,7 +75,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    const QString BROADCAST_KEY = "$$$$";   //broadcast: #$$$$##:user1;user2;user3
+    const QString BROADCAST_KEY = "$$$";
+    const QString BROADCAST_CONECTADO = "$c$";      //broadcast: #$$$$#$c$#:user1;user2;user3
+    const QString BROADCAST_DESCONECTADO = "$d$";   //broadcast: #$$$$#$d$#:user1;user2;user3
 
     Cliente *mCliente;
     QString mNickname;
@@ -83,6 +87,7 @@ private:
     QString mMensagem;
 
     std::map<QString, QStringList> mMapNickLog;
+    QStringList listaNicknameOnline;
 
 };
 

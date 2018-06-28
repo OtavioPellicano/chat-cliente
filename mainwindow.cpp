@@ -121,8 +121,8 @@ void MainWindow::setUiConectado(const bool &value)
         ui->actionConectar_a_sala->setEnabled(false);
         ui->actionSair_da_sala->setEnabled(true);
         ui->comboBox_conversa_atual->setEnabled(true);
-        ui->listView_chat->setEnabled(true);
-        ui->listView_usuarios->setEnabled(true);
+        ui->listWidget_chat->setEnabled(true);
+        ui->listWidget_usuarios->setEnabled(true);
         ui->pushButton_enviar->setEnabled(true);
         ui->textEdit_mensagem->setEnabled(true);
 
@@ -133,8 +133,8 @@ void MainWindow::setUiConectado(const bool &value)
         ui->actionConectar_a_sala->setEnabled(true);
         ui->actionSair_da_sala->setEnabled(false);
         ui->comboBox_conversa_atual->setEnabled(false);
-        ui->listView_chat->setEnabled(false);
-        ui->listView_usuarios->setEnabled(false);
+        ui->listWidget_chat->setEnabled(false);
+        ui->listWidget_usuarios->setEnabled(false);
         ui->pushButton_enviar->setEnabled(false);
         ui->textEdit_mensagem->setEnabled(false);
 
@@ -177,10 +177,40 @@ void MainWindow::readyRead(const QByteArray &msg)
         return;
     }
 
-    //Broadcast: #$$$$##:user1;user2;user3
-    if(origem() == BROADCAST_KEY && destino().isEmpty() && !mensagem().isEmpty())
+    //Broadcast: #$$$$#???#:user1;user2;user3
+    if(origem() == BROADCAST_KEY &&
+            (destino() == BROADCAST_CONECTADO || destino() == BROADCAST_DESCONECTADO) &&
+            !mensagem().isEmpty())
     {
-        //tratar broadcast
+
+        if(destino() == BROADCAST_CONECTADO)
+        {
+            setListaNicknameOnline(mensagem().split(";"));
+
+            for(auto itqstr = listaNicknameOnline.begin(); itqstr != listaNicknameOnline.end(); ++itqstr)
+            {
+                if(*itqstr == nickname())
+                {
+                    listaNicknameOnline.erase(itqstr);
+                    break;
+                }
+            }
+
+            ui->listWidget_usuarios->clear();
+            ui->listWidget_usuarios->addItems(listaNicknameOnline);
+
+            QString usuarioOnline = listaNicknameOnline[listaNicknameOnline.size() - 1];
+            if(usuarioOnline != nickname())
+                QMessageBox::information(this, tr("Chat"), QString("Novo usuário online:\n%1").arg(usuarioOnline), QMessageBox::Ok);
+
+
+
+        }
+        else
+        {
+
+        }
+
         return;
     }
 
@@ -253,4 +283,14 @@ void MainWindow::on_actionSair_da_sala_triggered()
 void MainWindow::on_pushButton_enviar_clicked()
 {
 
+}
+
+QStringList MainWindow::getListaNicknameOnline() const
+{
+    return listaNicknameOnline;
+}
+
+void MainWindow::setListaNicknameOnline(const QStringList &value)
+{
+    listaNicknameOnline = value;
 }
