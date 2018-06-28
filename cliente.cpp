@@ -30,7 +30,7 @@ bool Cliente::startCliente()
 bool Cliente::enviarMensagem(const QString &qstrMsg)
 {
     QByteArray byteArrayTemp = qstrMsg.toLocal8Bit();
-    byteArrayTemp.append("\r\n");
+    byteArrayTemp.append("\r\n\r\n\r\n");       //garantindo o envio
     socket()->write(byteArrayTemp);
     if(!socket()->waitForBytesWritten())
         return false;
