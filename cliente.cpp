@@ -12,7 +12,7 @@ bool Cliente::startCliente()
     connect(socket(), SIGNAL(connected()), this, SLOT(connected()));
     connect(socket(), SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(socket(), SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWritten(qint64)));
-    connect(socket(), SIGNAL(readyRead()), this, SLOT(readyRead()));
+    connect(socket(), SIGNAL(readyRead()), this, SLOT(readyRead()), Qt::QueuedConnection);
 
     socket()->connectToHost("127.0.0.1", 1312);
 
