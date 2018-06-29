@@ -72,6 +72,8 @@ private:
     QString homeMensagem() const;
     void setHomeMensagem(const QString &homeMensagem);
 
+    void atualizarChatList(const QString &dst, const QString &msg);
+
 
 
 public slots:

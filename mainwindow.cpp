@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     setUiConectado(false);
+    ui->pushButton_enviar->setShortcut(QKeySequence(Qt::Key_Return));
 
 }
 
@@ -225,6 +226,9 @@ void MainWindow::readyRead(const QByteArray &msg)
 
             ui->statusBar->showMessage(QString("%1 desconectado").arg(mListaNicknameOnline.back()), 3000);
 
+            if(mListaNicknameOnline.back() == ui->lineEdit_destino->text())
+                ui->lineEdit_destino->clear();
+
             mListaNicknameOnline.pop_back();
 
             for(auto itqstr = mListaNicknameOnline.begin(); itqstr != mListaNicknameOnline.end(); ++itqstr)
@@ -239,6 +243,15 @@ void MainWindow::readyRead(const QByteArray &msg)
             ui->listWidget_usuarios->addItems(listaNicknameOnline());
 
         }
+
+        return;
+    }
+
+
+    if(!origem().isEmpty() && !destino().isEmpty() && !mensagem().isEmpty())
+    {
+        if(destino() == nickname())
+            atualizarChatList(origem(), mensagem());
 
         return;
     }
@@ -312,11 +325,17 @@ void MainWindow::on_actionSair_da_sala_triggered()
 void MainWindow::on_pushButton_enviar_clicked()
 {
     setHomeMensagem(ui->lineEdit_mensagem->text());
-    ui->lineEdit_mensagem->clear();
-    if(homeMensagem().isEmpty() || homeDestino().isEmpty())
+
+    if(homeMensagem().isEmpty())
         return;
 
+    if(ui->lineEdit_destino->text().isEmpty())
+    {
+        QMessageBox::information(this, tr("Chat"), QString("Selecione um usuário."), QMessageBox::Ok);
+        return;
+    }
 
+    ui->lineEdit_mensagem->clear();
     mListaConversa.append(QString("%1: %2").arg(homeOrigem()).arg(homeMensagem()));
     ui->listWidget_chat->clear();
     ui->listWidget_chat->addItems(mListaConversa);
@@ -357,6 +376,14 @@ QString MainWindow::homeMensagem() const
 void MainWindow::setHomeMensagem(const QString &homeMensagem)
 {
     mHomeMensagem = homeMensagem;
+}
+
+void MainWindow::atualizarChatList(const QString &dst, const QString &msg)
+{
+    ui->listWidget_chat->clear();
+    mListaConversa.append(QString("%1: %2").arg(dst).arg(msg));
+    ui->listWidget_chat->addItems(mListaConversa);
+    ui->listWidget_chat->scrollToBottom();
 }
 
 QString MainWindow::homeDestino() const
