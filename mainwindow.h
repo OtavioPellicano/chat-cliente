@@ -15,7 +15,7 @@
 /**
  * codigo de retorno
  * $c$  //conectado
- * $d$  //fui desconectado
+ * $d$  //desconectado
  *
  * formato mensagem
  * #origem#destino#:
@@ -80,7 +80,6 @@ public slots:
     void readyRead(const QByteArray &msg);
 
 private slots:
-
 
     void on_actionFechar_triggered();
 

@@ -364,7 +364,7 @@ void MainWindow::on_listWidget_usuarios_itemDoubleClicked(QListWidgetItem *item)
     setHomeDestino(ui->lineEdit_destino->text());
 
     ui->statusBar->showMessage(QString("conversando com %1").arg(item->text()));
-
+    ui->lineEdit_mensagem->setFocus();
 
 }
 
