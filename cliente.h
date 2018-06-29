@@ -11,10 +11,9 @@ class Cliente : public QObject
 public:
     explicit Cliente(QObject *parent = nullptr);
 
-    bool startCliente();
+    bool startCliente(const QString &host = "127.0.0.1", const qint16 &porta = 1312);
 
     bool enviarMensagem(const QString &qstrMsg);
-
 
 private:
 
@@ -23,7 +22,6 @@ private:
 
     qintptr descriptor() const;
     void setDescriptor(const qintptr &descriptor);
-
 
 signals:
     void readyRead(const QByteArray &msg);
@@ -38,6 +36,7 @@ private:
 
     QTcpSocket *mSocket;
     qintptr mDescriptor;
+
 };
 
 #endif // CLIENTE_H

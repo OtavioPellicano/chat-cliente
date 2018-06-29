@@ -10,6 +10,7 @@
 #include <string>
 #include <map>
 #include <QListWidget>
+#include <configuracoes.h>
 
 
 /**
@@ -35,6 +36,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
+    QString host() const;
+    void setHost(const QString &host);
+
+    qint16 porta() const;
+    void setPorta(const qint16 &porta);
 
 private:
     Cliente *cliente() const;
@@ -79,6 +86,7 @@ private:
 public slots:
     void readyRead(const QByteArray &msg);
 
+
 private slots:
 
     void on_actionFechar_triggered();
@@ -90,6 +98,12 @@ private slots:
     void on_pushButton_enviar_clicked();
 
     void on_listWidget_usuarios_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_actionConfigurar_Host_triggered();
+
+public slots:
+    void configuracoesOnPushButtonClicked(const QString &host, const int &porta);
+
 
 private:
     Ui::MainWindow *ui;
@@ -112,6 +126,11 @@ private:
     QString mHomeOrigem;
     QString mHomeDestino;
     QString mHomeMensagem;
+
+    Configuracoes *mConfigUi;
+
+    QString mHost = "127.0.0.1";
+    qint16 mPorta = 1312;
 
 };
 

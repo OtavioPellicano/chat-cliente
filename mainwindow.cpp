@@ -129,6 +129,7 @@ void MainWindow::setUiConectado(const bool &value)
         ui->pushButton_enviar->setEnabled(true);
         ui->lineEdit_mensagem->setEnabled(true);
         ui->lineEdit_origem->setEnabled(true);
+        ui->actionConfigurar_Host->setEnabled(false);
 
         ui->statusBar->showMessage(QString("conectado como %1").arg(nickname()), 3000);
     }
@@ -142,6 +143,7 @@ void MainWindow::setUiConectado(const bool &value)
         ui->pushButton_enviar->setEnabled(false);
         ui->lineEdit_mensagem->setEnabled(false);
         ui->lineEdit_origem->setEnabled(false);
+        ui->actionConfigurar_Host->setEnabled(true);
 
         ui->lineEdit_origem->clear();
         ui->lineEdit_destino->clear();
@@ -260,6 +262,14 @@ void MainWindow::readyRead(const QByteArray &msg)
 
 }
 
+void MainWindow::configuracoesOnPushButtonClicked(const QString &host, const int &porta)
+{
+    setHost(host);
+    setPorta(porta);
+    qDebug() << "host: " << host;
+    qDebug() << "porta: " << porta;
+}
+
 Cliente *MainWindow::cliente() const
 {
     return mCliente;
@@ -289,7 +299,7 @@ void MainWindow::on_actionConectar_a_sala_triggered()
     if(ok)
     {
 
-        if(!cliente()->startCliente())
+        if(!cliente()->startCliente(host(), porta()))
         {
             QMessageBox::critical(this, tr("Erro!"), tr("Erro ao entrar na sala!\nVerifique se o servidor está online.\n-> 127.0.0.1 1312"), QMessageBox::Ok);
             return;
@@ -404,4 +414,34 @@ QString MainWindow::homeOrigem() const
 void MainWindow::setHomeOrigem(const QString &homeOrigem)
 {
     mHomeOrigem = homeOrigem;
+}
+
+void MainWindow::on_actionConfigurar_Host_triggered()
+{
+    mConfigUi = new Configuracoes(this);
+
+    connect(mConfigUi, SIGNAL(pushButtonOkClicked(QString,int)), this, SLOT(configuracoesOnPushButtonClicked(QString,int)));
+    mConfigUi->exec();
+
+    delete mConfigUi;
+}
+
+qint16 MainWindow::porta() const
+{
+    return mPorta;
+}
+
+void MainWindow::setPorta(const qint16 &porta)
+{
+    mPorta = porta;
+}
+
+QString MainWindow::host() const
+{
+    return mHost;
+}
+
+void MainWindow::setHost(const QString &host)
+{
+    mHost = host;
 }

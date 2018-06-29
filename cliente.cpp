@@ -5,7 +5,7 @@ Cliente::Cliente(QObject *parent) : QObject(parent)
 
 }
 
-bool Cliente::startCliente()
+bool Cliente::startCliente(const QString &host, const qint16 &porta)
 {
     setSocket(new QTcpSocket(this));
 
@@ -14,7 +14,7 @@ bool Cliente::startCliente()
     connect(socket(), SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWritten(qint64)));
     connect(socket(), SIGNAL(readyRead()), this, SLOT(readyRead()), Qt::QueuedConnection);
 
-    socket()->connectToHost("127.0.0.1", 1312);
+    socket()->connectToHost(host, porta);
 
     if(!socket()->waitForConnected())
     {
@@ -80,6 +80,7 @@ void Cliente::readyRead()
 
     emit readyRead(bTemp);
 }
+
 
 
 

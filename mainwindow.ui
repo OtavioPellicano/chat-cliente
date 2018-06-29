@@ -119,7 +119,14 @@
     <addaction name="actionSair_da_sala"/>
     <addaction name="actionFechar"/>
    </widget>
+   <widget class="QMenu" name="menuConfigura_es">
+    <property name="title">
+     <string>Configurações</string>
+    </property>
+    <addaction name="actionConfigurar_Host"/>
+   </widget>
    <addaction name="menuInicio"/>
+   <addaction name="menuConfigura_es"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -143,6 +150,11 @@
   <action name="actionFechar">
    <property name="text">
     <string>Fechar</string>
+   </property>
+  </action>
+  <action name="actionConfigurar_Host">
+   <property name="text">
+    <string>Configurar Host</string>
    </property>
   </action>
  </widget>
