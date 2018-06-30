@@ -313,6 +313,7 @@ void MainWindow::on_actionConectar_a_sala_triggered()
         }
         else
         {
+            ui->actionConectar_a_sala->setChecked(false);
             delete cliente();
         }
     }
