@@ -171,6 +171,7 @@ void MainWindow::readyRead(const QByteArray &msg)
     if(destino().isEmpty() && origem().isEmpty())
     {
         QMessageBox::critical(this, tr("Chat"), tr("Nickname em uso!"), QMessageBox::Ok);
+        ui->actionConectar_a_sala->setChecked(false);
         return;
     }
 
