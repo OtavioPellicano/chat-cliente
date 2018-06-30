@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Configurar do Host</string>
+      <string>Configurar Host</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>

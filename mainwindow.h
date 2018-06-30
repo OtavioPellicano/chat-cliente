@@ -93,8 +93,6 @@ private slots:
 
     void on_actionConectar_a_sala_triggered();
 
-    void on_actionSair_da_sala_triggered();
-
     void on_pushButton_enviar_clicked();
 
     void on_listWidget_usuarios_itemDoubleClicked(QListWidgetItem *item);

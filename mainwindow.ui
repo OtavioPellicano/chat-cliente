@@ -116,17 +116,12 @@
      <string>Inicio</string>
     </property>
     <addaction name="actionConectar_a_sala"/>
-    <addaction name="actionSair_da_sala"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfigurar_Host"/>
+    <addaction name="separator"/>
     <addaction name="actionFechar"/>
    </widget>
-   <widget class="QMenu" name="menuConfigura_es">
-    <property name="title">
-     <string>Configurações</string>
-    </property>
-    <addaction name="actionConfigurar_Host"/>
-   </widget>
    <addaction name="menuInicio"/>
-   <addaction name="menuConfigura_es"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -135,30 +130,44 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionConectar_a_sala"/>
+   <addaction name="actionConfigurar_Host"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConectar_a_sala">
-   <property name="text">
-    <string>Conectar a sala</string>
+   <property name="checkable">
+    <bool>true</bool>
    </property>
-  </action>
-  <action name="actionSair_da_sala">
+   <property name="icon">
+    <iconset resource="img.qrc">
+     <normaloff>:/img/ethernet-32.png</normaloff>:/img/ethernet-32.png</iconset>
+   </property>
    <property name="text">
-    <string>Sair da sala</string>
+    <string>Conectar/Desconectar</string>
    </property>
   </action>
   <action name="actionFechar">
+   <property name="icon">
+    <iconset resource="img.qrc">
+     <normaloff>:/img/open-exit-door-32.png</normaloff>:/img/open-exit-door-32.png</iconset>
+   </property>
    <property name="text">
-    <string>Fechar</string>
+    <string>Sair</string>
    </property>
   </action>
   <action name="actionConfigurar_Host">
+   <property name="icon">
+    <iconset resource="img.qrc">
+     <normaloff>:/img/local-network-32.png</normaloff>:/img/local-network-32.png</iconset>
+   </property>
    <property name="text">
     <string>Configurar Host</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="img.qrc"/>
+ </resources>
  <connections/>
 </ui>

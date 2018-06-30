@@ -121,8 +121,6 @@ void MainWindow::setUiConectado(const bool &value)
 
     if(value)
     {
-        ui->actionConectar_a_sala->setEnabled(false);
-        ui->actionSair_da_sala->setEnabled(true);
         ui->lineEdit_destino->setEnabled(true);
         ui->listWidget_chat->setEnabled(true);
         ui->listWidget_usuarios->setEnabled(true);
@@ -135,8 +133,6 @@ void MainWindow::setUiConectado(const bool &value)
     }
     else
     {
-        ui->actionConectar_a_sala->setEnabled(true);
-        ui->actionSair_da_sala->setEnabled(false);
         ui->lineEdit_destino->setEnabled(false);
         ui->listWidget_chat->setEnabled(false);
         ui->listWidget_usuarios->setEnabled(false);
@@ -288,49 +284,52 @@ void MainWindow::on_actionFechar_triggered()
 
 void MainWindow::on_actionConectar_a_sala_triggered()
 {
-    bool ok;
 
-    QString strTemp = QInputDialog::getText(this, tr("Nickname"), tr("Insira um nickname para entrar na sala"), QLineEdit::Normal, tr("nickname"), &ok);
-
-    setCliente(new Cliente(this));
-
-    connect(cliente(), SIGNAL(readyRead(QByteArray)), this, SLOT(readyRead(QByteArray)));
-
-    if(ok)
+    if(ui->actionConectar_a_sala->isChecked())
     {
+        bool ok;
+        QString strTemp = QInputDialog::getText(this, tr("Nickname"), tr("Insira um nickname para entrar na sala"), QLineEdit::Normal, tr("nickname"), &ok);
+        setCliente(new Cliente(this));
 
-        if(!cliente()->startCliente(host(), porta()))
+        connect(cliente(), SIGNAL(readyRead(QByteArray)), this, SLOT(readyRead(QByteArray)));
+
+        if(ok)
         {
-            QMessageBox::critical(this, tr("Erro!"), tr("Erro ao entrar na sala!\nVerifique se o servidor está online.\n-> 127.0.0.1 1312"), QMessageBox::Ok);
-            return;
-        }
 
-        setNickname(strTemp);
-        if(!cliente()->enviarMensagem(encapsularMsg(nickname())))
+            if(!cliente()->startCliente(host(), porta()))
+            {
+                QMessageBox::critical(this, tr("Erro!"), QString("Erro ao entrar na sala!\nVerifique se o servidor está online.\n->%1 %2").arg(host()).arg(porta()), QMessageBox::Ok);
+                ui->actionConectar_a_sala->setChecked(false);
+                return;
+            }
+
+            setNickname(strTemp);
+            if(!cliente()->enviarMensagem(encapsularMsg(nickname())))
+            {
+                qDebug() << "impossivel enviar a mensagem";
+                return;
+            }
+
+        }
+        else
         {
-            qDebug() << "impossivel enviar a mensagem";
-            return;
+            delete cliente();
         }
-
     }
     else
     {
+        setUiConectado(false);
+
         delete cliente();
+
+        qDebug() << "Desconectado";
     }
 
 
+
+
 }
 
-
-void MainWindow::on_actionSair_da_sala_triggered()
-{
-    setUiConectado(false);
-
-    delete cliente();
-
-    qDebug() << "Desconectado";
-
-}
 
 void MainWindow::on_pushButton_enviar_clicked()
 {
