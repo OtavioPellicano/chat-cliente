@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/ethernet-32.png</file>
+        <file>img/local-network-32.png</file>
+        <file>img/open-exit-door-32.png</file>
+    </qresource>
+</RCC>
