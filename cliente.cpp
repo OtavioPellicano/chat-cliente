@@ -16,7 +16,7 @@ bool Cliente::startCliente(const QString &host, const qint16 &porta)
 
     socket()->connectToHost(host, porta);
 
-    if(!socket()->waitForConnected())
+    if(!socket()->waitForConnected(5000))
     {
         qDebug() << "Impossivel conectar ao servidor";
         return false;
