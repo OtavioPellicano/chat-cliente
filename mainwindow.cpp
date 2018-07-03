@@ -297,6 +297,8 @@ void MainWindow::on_actionConectar_a_sala_triggered()
         if(ok)
         {
 
+            ui->statusBar->showMessage(QString("conectando a %1 %2...").arg(host()).arg(porta()), 5);
+
             if(!cliente()->startCliente(host(), porta()))
             {
                 QMessageBox::critical(this, tr("Erro!"), QString("Erro ao entrar na sala!\nVerifique se o servidor está online.\n->%1 %2").arg(host()).arg(porta()), QMessageBox::Ok);
