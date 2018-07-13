@@ -290,12 +290,11 @@ void MainWindow::on_actionConectar_a_sala_triggered()
     {
         bool ok;
         QString strTemp = QInputDialog::getText(this, tr("Nickname"), tr("Insira um nickname para entrar na sala"), QLineEdit::Normal, tr("nickname"), &ok);
-        setCliente(new Cliente(this));
-
-        connect(cliente(), SIGNAL(readyRead(QByteArray)), this, SLOT(readyRead(QByteArray)));
 
         if(ok)
         {
+            setCliente(new Cliente(this));
+            connect(cliente(), SIGNAL(readyRead(QByteArray)), this, SLOT(readyRead(QByteArray)));
 
             ui->statusBar->showMessage(QString("conectando a %1 %2...").arg(host()).arg(porta()), 5);
 
@@ -317,15 +316,12 @@ void MainWindow::on_actionConectar_a_sala_triggered()
         else
         {
             ui->actionConectar_a_sala->setChecked(false);
-            delete cliente();
         }
     }
     else
     {
         setUiConectado(false);
-
         delete cliente();
-
         qDebug() << "Desconectado";
     }
 
