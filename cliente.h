@@ -4,12 +4,15 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QObject>
+#include <QTest>
 
 class Cliente : public QObject
 {
     Q_OBJECT
 public:
     explicit Cliente(QObject *parent = nullptr);
+
+    virtual ~Cliente();
 
     bool startCliente(const QString &host = "127.0.0.1", const qint16 &porta = 1312);
 

@@ -5,6 +5,13 @@ Cliente::Cliente(QObject *parent) : QObject(parent)
 
 }
 
+Cliente::~Cliente()
+{
+    //mensagem para desconectar
+    enviarMensagem("##:");
+    QTest::qSleep(500);
+}
+
 bool Cliente::startCliente(const QString &host, const qint16 &porta)
 {
     setSocket(new QTcpSocket(this));
