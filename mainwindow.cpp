@@ -420,6 +420,7 @@ void MainWindow::on_actionConfigurar_Host_triggered()
     mConfigUi = new Configuracoes(this);
 
     connect(mConfigUi, SIGNAL(pushButtonOkClicked(QString,int)), this, SLOT(configuracoesOnPushButtonClicked(QString,int)));
+    mConfigUi->setWindowTitle("Configurar host");
     mConfigUi->exec();
 
     delete mConfigUi;
